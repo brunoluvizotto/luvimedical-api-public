@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "declaration": true,
+    "removeComments": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "target": "ES2022",
+    "sourceMap": true,
+    "outDir": "./dist",
+    "incremental": true,
+    "baseUrl": "src",
+    "skipLibCheck": true,
+    "paths": {
+      "~addresses/*": ["./addresses/*"],
+      "~appointments/*": ["./appointments/*"],
+      "~auth/*": ["./auth/*"],
+      "~common/*": ["./common/*"],
+      "~mailer/*": ["./mailer/*"],
+      "~patient-records/*": ["./patient-records/*"],
+      "~patients/*": ["./patients/*"],
+      "~physicians/*": ["./physicians/*"],
+    }
+  }
+}

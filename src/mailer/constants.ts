@@ -1,0 +1,7 @@
+export enum MAILER {
+  API_RBMQ_MAILER_PROXY_TOKEN = 'API_RBMQ_MAILER_PROXY_TOKEN',
+}
+
+export enum MESSAGE_PATTERNS {
+  SEND_MAIL_TRIGGERED = 'send.mail.triggered',
+}

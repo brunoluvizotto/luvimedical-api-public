@@ -1,0 +1,273 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Address {
+  id           String   @id(map: "PK_745d8f43d3af10ab8247465e450") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt    DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+  street       String?  @db.VarChar
+  number       String?  @db.VarChar
+  complement   String?  @db.VarChar
+  neighborhood String?  @db.VarChar
+  zipCode      String?  @map("zip_code") @db.VarChar
+  city         String?  @db.VarChar
+  state        String?  @db.VarChar
+  country      String?  @db.VarChar
+  patient      Patient?
+
+  @@map("addresses")
+}
+
+model Appointment {
+  id            String                @id(map: "PK_4a437a9a27e948726b8bb3e36ad") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  createdAt     DateTime              @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime              @updatedAt @map("updated_at") @db.Timestamptz(6)
+  startTime     DateTime              @map("start_time") @db.Timestamptz(6)
+  endTime       DateTime              @map("end_time") @db.Timestamptz(6)
+  status        AppointmentStatusEnum @default(scheduled)
+  patientId     String                @map("patient_id") @db.Uuid
+  physicianId   String                @map("physician_id") @db.Uuid
+  patientRecord PatientRecord?
+  patient       Patient               @relation(fields: [patientId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_3330f054416745deaa2cc130700")
+  physician     Physician             @relation(fields: [physicianId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_67fb8641827e5d58bb64a525017")
+
+  @@map("appointments")
+}
+
+model MailRecipient {
+  id             String        @id(map: "PK_eaac4d741fd39174605a36119d8") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  createdAt      DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt      DateTime      @updatedAt @map("updated_at") @db.Timestamptz(6)
+  email          String?       @db.VarChar
+  phoneNumber    String?       @map("phone_number") @db.VarChar
+  mailScheduleId String?       @map("mail_schedule_id") @db.Uuid
+  mailSchedule   MailSchedule? @relation(fields: [mailScheduleId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_2082a6010ce659afcecd0278d2d")
+
+  @@map("mail_recipients")
+}
+
+model MailSchedule {
+  id              String          @id(map: "PK_186df62a543b2af5f46d2efe006") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  createdAt       DateTime        @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime        @updatedAt @map("updated_at") @db.Timestamptz(6)
+  deletedAt       DateTime?       @map("deleted_at") @db.Timestamp(6)
+  lastRunAt       DateTime?       @map("last_run_at") @db.Timestamptz(6)
+  time            DateTime        @db.Timetz(6)
+  sunday          Boolean
+  monday          Boolean
+  tuesday         Boolean
+  wednesday       Boolean
+  thursday        Boolean
+  friday          Boolean
+  saturday        Boolean
+  recipientUserId String?         @map("recipient_user_id") @db.Uuid
+  mailRecipients  MailRecipient[]
+  recipientUser   User?           @relation(fields: [recipientUserId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_40a9c07aa9b6d7b8a5d62b4fef6")
+  mailTemplates   MailTemplate[]
+
+  @@map("mail_schedules")
+}
+
+model MailTemplate {
+  id            String                         @id(map: "PK_fa35b7af25d925a1c8406ba2ef6") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  createdAt     DateTime                       @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime                       @updatedAt @map("updated_at") @db.Timestamptz(6)
+  deletedAt     DateTime?                      @map("deleted_at") @db.Timestamp(6)
+  name          String                         @db.VarChar
+  subject       String?                        @db.VarChar
+  body          String                         @db.VarChar
+  contactMethod MailTemplatesContactMethodEnum @map("contact_method")
+  mailSchedules MailSchedule[]
+
+  @@unique([name, contactMethod], map: "UQ_b1a32ad13a50a91b9b0fe956ac0")
+  @@map("mail_templates")
+}
+
+model Message {
+  id             String    @id(map: "PK_18325f38ae6de43878487eff986") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  createdAt      DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt      DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  senderUserId   String    @map("sender_user_id") @db.Uuid
+  receiverUserId String?   @map("receiver_user_id") @db.Uuid
+  groupId        String?   @map("group_id") @db.Uuid
+  body           String    @db.VarChar
+  viewedAt       DateTime? @map("viewed_at") @db.Timestamptz(6)
+  receiverUser   User?     @relation("messages_receiver_user_idTousers", fields: [receiverUserId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_67873bf1202123a6deae603034e")
+  senderUser     User      @relation("messages_sender_user_idTousers", fields: [senderUserId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_b183972e0b84c9022884433195e")
+
+  @@map("messages")
+}
+
+model Migration {
+  id        Int    @id(map: "PK_8c82d7f526340ab734260ea46be") @default(autoincrement())
+  timestamp BigInt
+  name      String @db.VarChar
+
+  @@map("migrations")
+}
+
+model PatientRecord {
+  id            String                  @id(map: "PK_146301514bbccff6c5138b36db4") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  createdAt     DateTime                @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime                @updatedAt @map("updated_at") @db.Timestamptz(6)
+  record        String                  @db.VarChar
+  status        PatientRecordStatusEnum @default(draft)
+  patientId     String                  @map("patient_id") @db.Uuid
+  physicianId   String?                 @map("physician_id") @db.Uuid
+  appointmentId String?                 @unique(map: "REL_658962b422422bd4230df0787a") @map("appointment_id") @db.Uuid
+  appointment   Appointment?            @relation(fields: [appointmentId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_658962b422422bd4230df0787a8")
+  patient       Patient                 @relation(fields: [patientId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_3169a2dabcc07107205fd1191c5")
+  physician     Physician?              @relation(fields: [physicianId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_9516a40edd866128926afd85081")
+
+  @@map("patient_records")
+}
+
+model Patient {
+  id                     String                     @id(map: "PK_a7f0b9fcbb3469d5ec0b0aceaa7") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  createdAt              DateTime                   @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt              DateTime                   @updatedAt @map("updated_at") @db.Timestamptz(6)
+  name                   String                     @db.VarChar
+  email                  String                     @db.VarChar
+  dateOfBirth            DateTime?                  @map("date_of_birth") @db.Date
+  phoneNumber            String                     @map("phone_number") @db.VarChar
+  cpf                    String                     @db.VarChar
+  preferredContactMethod PreferredContactMethodEnum @map("preferred_contact_method")
+  addressId              String?                    @unique(map: "REL_f483f0de5daf9ee8cf5c95bf93") @map("address_id") @db.Uuid
+  appointments           Appointment[]
+  records                PatientRecord[]
+  address                Address?                   @relation(fields: [addressId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_f483f0de5daf9ee8cf5c95bf932")
+
+  @@map("patients")
+}
+
+model Permission {
+  id        String   @id(map: "PK_920331560282b8bd21bb02290df") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+  name      String   @unique(map: "UQ_48ce552495d14eae9b187bb6716") @db.VarChar
+  roles     Role[]
+
+  @@map("permissions")
+}
+
+model PhysicianLeave {
+  id          String    @id(map: "PK_33ab16ab8361c85dce6958008f4") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  startTime   DateTime  @map("start_time") @db.Timestamptz(6)
+  endTime     DateTime  @map("end_time") @db.Timestamptz(6)
+  reason      String?   @db.VarChar
+  physicianId String    @map("physician_id") @db.Uuid
+  physician   Physician @relation(fields: [physicianId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_4a8fc319a754f1132fa45bc54df")
+
+  @@map("physician_leaves")
+}
+
+model Physician {
+  id             String                  @id(map: "PK_ca420d8a50c2f5ae18e781f244f") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  createdAt      DateTime                @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt      DateTime                @updatedAt @map("updated_at") @db.Timestamptz(6)
+  deletedAt      DateTime?               @map("deleted_at") @db.Timestamp(6)
+  name           String                  @db.VarChar
+  email          String                  @unique(map: "UQ_8315a45ad5602901c84758ea6d9") @db.VarChar
+  dateOfBirth    DateTime?               @map("date_of_birth") @db.Date
+  phoneNumber    String                  @map("phone_number") @db.VarChar
+  cpf            String                  @unique(map: "UQ_638f6c762368b922dc6f20e23f2") @db.VarChar
+  crm            String                  @unique(map: "UQ_638f6ca17eb7e3002eab907e290") @db.VarChar
+  appointments   Appointment[]
+  patientRecords PatientRecord[]
+  leaves         PhysicianLeave[]
+  workingHours   PhysicianWorkingHours[]
+  user           User?
+
+  @@map("physicians")
+}
+
+model PhysicianWorkingHours {
+  id          String                       @id(map: "PK_b8495243784a9ab3be21af6d36c") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  createdAt   DateTime                     @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime                     @updatedAt @map("updated_at") @db.Timestamptz(6)
+  day         PhysicianWorkingHoursDayEnum
+  startTime   DateTime                     @map("start_time") @db.Time(6)
+  endTime     DateTime                     @map("end_time") @db.Time(6)
+  physicianId String                       @map("physician_id") @db.Uuid
+  physician   Physician                    @relation(fields: [physicianId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_8a3a7b8b6b0a0e4d1e3ff9e016f")
+
+  @@map("physicians_working_hours")
+}
+
+model Role {
+  id          String       @id(map: "PK_c1433d71a4838793a49dcad46ab") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  createdAt   DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime     @updatedAt @map("updated_at") @db.Timestamptz(6)
+  name        String       @unique(map: "UQ_648e3f5447f725579d7d4ffdfb7") @db.VarChar
+  permissions Permission[]
+  users       User[]
+
+  @@map("roles")
+}
+
+model User {
+  id                            String         @id(map: "PK_a3ffb1c0c8416b9fc6f907b7433") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  createdAt                     DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt                     DateTime       @updatedAt @map("updated_at") @db.Timestamptz(6)
+  name                          String         @db.VarChar
+  email                         String         @unique(map: "UQ_97672ac88f789774dd47f7c8be3") @db.VarChar
+  password                      String         @db.VarChar
+  activated                     Boolean        @default(false)
+  activationToken               String?        @db.VarChar
+  activationTokenExpirationDate DateTime?      @db.Timestamptz(6)
+  physicianId                   String?        @unique(map: "REL_d17c4aac7682e7d4ea1a1d6715") @map("physician_id") @db.Uuid
+  phoneNumber                   String?        @map("phone_number") @db.VarChar
+  mailSchedules                 MailSchedule[]
+  receivedMessages              Message[]      @relation("messages_receiver_user_idTousers")
+  sentMessages                  Message[]      @relation("messages_sender_user_idTousers")
+  physician                     Physician?     @relation(fields: [physicianId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_d17c4aac7682e7d4ea1a1d67155")
+  roles                         Role[]
+
+  @@map("users")
+}
+
+enum AppointmentStatusEnum {
+  scheduled
+  confirmed
+  delayed
+  patient_available
+  ongoing
+  finished
+  canceled
+  no_show
+}
+
+enum MailTemplatesContactMethodEnum {
+  whatsapp
+  sms
+  email
+}
+
+enum PatientRecordStatusEnum {
+  draft
+  completed
+}
+
+enum PreferredContactMethodEnum {
+  whatsapp
+  phone
+  email
+}
+
+enum PhysicianWorkingHoursDayEnum {
+  monday
+  tuesday
+  wednesday
+  thursday
+  friday
+  saturday
+  sunday
+}

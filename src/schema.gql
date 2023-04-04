@@ -1,0 +1,582 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+input ActivateInput {
+  password: String!
+  token: String!
+}
+
+type ActivateResponse {
+  accessToken: String!
+  refreshToken: String!
+  user: User!
+}
+
+type Address {
+  city: String
+  complement: String
+  country: String
+  createdAt: DateTime!
+  id: String!
+  neighborhood: String
+  number: String
+  patient: Patient!
+  state: String
+  street: String
+  updatedAt: DateTime!
+  zipCode: String
+}
+
+input AddressInput {
+  city: String
+  complement: String
+  country: String
+  neighborhood: String
+  number: String
+  state: String
+  street: String
+  zipCode: String
+}
+
+type Appointment {
+  createdAt: DateTime!
+  endTime: DateTime!
+  id: String!
+  patient: Patient!
+  patientId: String!
+  patientRecord: PatientRecord
+  patientRecordId: String
+  physician: Physician!
+  physicianId: String!
+  startTime: DateTime!
+  status: AppointmentStatusEnum!
+  updatedAt: DateTime!
+}
+
+type AppointmentListResponse {
+  count: Float!
+  data: [Appointment!]!
+}
+
+type AppointmentResponse {
+  appointment: Appointment!
+}
+
+enum AppointmentStatusEnum {
+  canceled
+  confirmed
+  delayed
+  finished
+  no_show
+  ongoing
+  patient_available
+  scheduled
+}
+
+input CreateAppointmentInput {
+  endTime: DateTime!
+  patientId: String!
+  patientRecordId: String
+  physicianId: String!
+  startTime: DateTime!
+  status: AppointmentStatusEnum = scheduled
+}
+
+input CreateMailRecipientInput {
+  email: String
+  phoneNumber: String
+}
+
+input CreateMailScheduleInput {
+  friday: Boolean!
+  monday: Boolean!
+  recipientUserId: String
+  saturday: Boolean!
+  sunday: Boolean!
+  thursday: Boolean!
+  time: DateTime!
+  tuesday: Boolean!
+  wednesday: Boolean!
+}
+
+input CreateMailTemplateInput {
+  body: String!
+  contactMethod: MailTemplatesContactMethodEnum!
+  name: String!
+  subject: String
+}
+
+input CreateMessageInput {
+  body: String!
+  groupId: String
+  receiverUserId: String
+}
+
+type CreateMessageResponse {
+  success: Boolean!
+}
+
+input CreatePatientInput {
+  address: AddressInput
+  cpf: String!
+  dateOfBirth: DateTime
+  email: String!
+  name: String!
+  phoneNumber: String!
+  preferredContactMethod: PreferredContactMethodEnum!
+}
+
+input CreatePatientRecordInput {
+  appointmentId: String
+  patientId: String!
+  physicianId: String
+  record: String!
+  status: PatientRecordStatusEnum = draft
+}
+
+input CreatePhysicianInput {
+  cpf: String!
+  crm: String!
+  dateOfBirth: DateTime
+  email: String!
+  name: String!
+  phoneNumber: String!
+}
+
+input CreatePhysicianLeaveInput {
+  endTime: DateTime!
+  physicianId: String!
+  reason: String
+  startTime: DateTime!
+}
+
+input CreatePhysicianWorkingHoursInput {
+  day: PhysicianWorkingHoursDayEnum!
+  endTime: String!
+  physicianId: String!
+  startTime: String!
+}
+
+input CreateUserInput {
+  email: String!
+  name: String!
+  password: String
+  physicianId: String
+  roles: [String!] = []
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type DeleteResponse {
+  success: Boolean!
+}
+
+"""
+The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+scalar JSON
+
+type MailRecipient {
+  createdAt: DateTime!
+  email: String
+  id: String!
+  mailSchedule: MailSchedule!
+  phoneNumber: String
+  updatedAt: DateTime!
+}
+
+type MailSchedule {
+  createdAt: DateTime!
+  friday: Boolean!
+  id: String!
+  lastRunAt: DateTime
+  mailRecipients: [MailRecipient!]!
+  mailTemplates: [MailTemplate!]!
+  monday: Boolean!
+  recipientUser: User
+  recipientUserId: String
+  saturday: Boolean!
+  sunday: Boolean!
+  thursday: Boolean!
+  time: DateTime!
+  tuesday: Boolean!
+  updatedAt: DateTime!
+  wednesday: Boolean!
+}
+
+type MailScheduleResponse {
+  mailSchedule: MailSchedule!
+}
+
+type MailTemplate {
+  body: String!
+  contactMethod: MailTemplatesContactMethodEnum!
+  createdAt: DateTime!
+  id: String!
+  mailSchedules: [MailSchedule!]!
+  name: String!
+  subject: String
+  updatedAt: DateTime!
+}
+
+type MailTemplateResponse {
+  mailTemplate: MailTemplate!
+}
+
+enum MailTemplatesContactMethodEnum {
+  email
+  sms
+  whatsapp
+}
+
+input MessageCreatedInput {
+  accessToken: String!
+  subscribedGroup: String
+  userId: String
+}
+
+input MessageErrorInput {
+  accessToken: String!
+  subscribedGroup: String
+  userId: String
+}
+
+type MessageErrorResponse {
+  body: String!
+  groupId: String!
+  receiverUserId: String!
+  senderName: String!
+  senderUserId: String!
+}
+
+type MessageResponse {
+  body: String!
+  createdAt: DateTime!
+  groupId: String
+  id: String!
+  receiverUserId: String
+  senderUserId: String!
+  updatedAt: DateTime!
+  viewedAt: DateTime
+}
+
+input MessagesInput {
+  groupId: String
+  userId: String
+}
+
+type Mutation {
+  activateUser(input: ActivateInput!): ActivateResponse!
+  createAppointment(input: CreateAppointmentInput!): AppointmentResponse!
+  createMailSchedule(input: CreateMailScheduleInput!): MailScheduleResponse!
+  createMailTemplate(input: CreateMailTemplateInput!): MailTemplateResponse!
+  createMessage(input: CreateMessageInput!): CreateMessageResponse!
+  createPatient(input: CreatePatientInput!): PatientResponse!
+  createPatientRecord(input: CreatePatientRecordInput!): PatientRecordResponse!
+  createPhysician(input: CreatePhysicianInput!): PhysicianResponse!
+  createPhysicianLeave(input: CreatePhysicianLeaveInput!): PhysicianLeaveResponse!
+  createPhysicianWorkingHours(input: CreatePhysicianWorkingHoursInput!): PhysicianWorkingHoursResponse!
+  createUser(input: CreateUserInput!): UserResponse!
+  deleteMailSchedule(id: String!): DeleteResponse!
+  deleteMailTemplate(id: String!): DeleteResponse!
+  deletePhysician(id: String!): DeleteResponse!
+  deletePhysicianLeave(id: String!): DeleteResponse!
+  deletePhysicianWorkingHours(id: String!): DeleteResponse!
+  finishPatientRecord(id: String!): PatientRecordResponse!
+  setMessagesViewed(ids: [String!]!): CreateMessageResponse!
+  signIn(input: SignInInput!): SignInResponse!
+  signUp(input: SignUpInput!): SignUpResponse!
+  updateAppointment(id: String!, payload: UpdateAppointmentPayload!): AppointmentResponse!
+  updateMailSchedule(id: String!, payload: UpdateMailSchedulePayload!): MailScheduleResponse!
+  updateMailTemplate(id: String!, payload: UpdateMailTemplatePayload!): MailTemplateResponse!
+  updatePatient(id: String!, payload: UpdatePatientPayload!): PatientResponse!
+  updatePatientRecord(id: String!, payload: UpdatePatientRecordPayload!): PatientRecordResponse!
+  updatePhysician(id: String!, payload: UpdatePhysicianPayload!): PhysicianResponse!
+  updatePhysicianLeave(id: String!, payload: UpdatePhysicianLeavePayload!): PhysicianLeaveResponse!
+  updatePhysicianWorkingHours(id: String!, payload: UpdatePhysicianWorkingHoursPayload!): PhysicianWorkingHoursResponse!
+  updateUser(id: String!, payload: UpdateUserPayload!): UserResponse!
+}
+
+type Patient {
+  address: Address
+  addressId: String
+  appointments(endDate: DateTime, options: QueryOptions = {}, startDate: DateTime): AppointmentListResponse!
+  cpf: String!
+  createdAt: DateTime!
+  dateOfBirth: DateTime
+  email: String!
+  id: String!
+  name: String!
+  phoneNumber: String!
+  preferredContactMethod: PreferredContactMethodEnum!
+  records(options: QueryOptions = {}): [PatientRecord!]!
+  updatedAt: DateTime!
+}
+
+type PatientRecord {
+  appointment: Appointment
+  appointmentId: String
+  createdAt: DateTime!
+  id: String!
+  patient: Patient!
+  patientId: String!
+  physician: Physician
+  physicianId: String
+  record: String!
+  status: PatientRecordStatusEnum!
+  updatedAt: DateTime!
+}
+
+type PatientRecordResponse {
+  patientRecord: PatientRecord!
+}
+
+enum PatientRecordStatusEnum {
+  completed
+  draft
+}
+
+type PatientResponse {
+  patient: Patient!
+}
+
+type PatientsResponse {
+  count: Float!
+  items: [Patient!]!
+}
+
+type Permission {
+  createdAt: DateTime!
+  id: String!
+  name: String!
+  updatedAt: DateTime!
+}
+
+type Physician {
+  appointments(endDate: DateTime, startDate: DateTime): [Appointment!]!
+  cpf: String!
+  createdAt: DateTime!
+  crm: String!
+  dateOfBirth: DateTime
+  email: String!
+  id: String!
+  leaves(endDate: DateTime, startDate: DateTime): [PhysicianLeave!]!
+  name: String!
+  patientRecords: [PatientRecord!]!
+  phoneNumber: String!
+  updatedAt: DateTime!
+  workingHours: [PhysicianWorkingHours!]!
+}
+
+type PhysicianLeave {
+  createdAt: DateTime!
+  endTime: DateTime!
+  id: String!
+  physician: Physician!
+  physicianId: String!
+  reason: String
+  startTime: DateTime!
+  updatedAt: DateTime!
+}
+
+type PhysicianLeaveResponse {
+  physicianLeave: PhysicianLeave!
+}
+
+type PhysicianResponse {
+  physician: Physician!
+}
+
+type PhysicianWorkingHours {
+  createdAt: DateTime!
+  day: PhysicianWorkingHoursDayEnum!
+  endTime: String!
+  id: String!
+  physician: Physician!
+  physicianId: String!
+  startTime: String!
+  updatedAt: DateTime!
+}
+
+enum PhysicianWorkingHoursDayEnum {
+  friday
+  monday
+  saturday
+  sunday
+  thursday
+  tuesday
+  wednesday
+}
+
+type PhysicianWorkingHoursResponse {
+  physicianWorkingHours: PhysicianWorkingHours!
+}
+
+enum PreferredContactMethodEnum {
+  email
+  phone
+  whatsapp
+}
+
+type Query {
+  addressById(id: String!): Address!
+  addresses(options: QueryOptions = {}): [Address!]!
+  appointmentById(id: String!): Appointment!
+  appointments(endDate: DateTime, options: QueryOptions = {}, startDate: DateTime): AppointmentListResponse!
+  chatUsers: [User!]!
+  mailScheduleById(id: String!): MailSchedule!
+  mailSchedules(options: QueryOptions = {}): [MailSchedule!]!
+  mailTemplateById(id: String!): MailTemplate!
+  mailTemplates(options: QueryOptions = {}): [MailTemplate!]!
+  messages(input: MessagesInput!): [MessageResponse!]!
+  patientById(id: String!): Patient!
+  patientRecordById(id: String!): PatientRecord!
+  patientRecords(options: QueryOptions = {}): [PatientRecord!]!
+  patients(options: QueryOptions = {}): PatientsResponse!
+  physicianById(id: String!): Physician!
+  physicians(options: QueryOptions = {}): [Physician!]!
+  roles: [String!]!
+  user: User!
+  userById(id: String!): User!
+  users(options: QueryOptions = {}): [User!]!
+}
+
+input QueryOptions {
+  orderBy: JSON
+  skip: Int
+  take: Int
+  where: JSON
+}
+
+type Role {
+  createdAt: DateTime!
+  id: String!
+  name: String!
+  permissions: [Permission!]!
+  updatedAt: DateTime!
+}
+
+input SignInInput {
+  email: String!
+  password: String!
+}
+
+type SignInResponse {
+  accessToken: String!
+  refreshToken: String!
+  user: User!
+}
+
+input SignUpInput {
+  email: String!
+  name: String!
+  password: String!
+  physicianId: String
+}
+
+type SignUpResponse {
+  user: User!
+}
+
+type Subscription {
+  messageCreated(input: MessageCreatedInput!): MessageResponse!
+  messageError(input: MessageErrorInput!): MessageErrorResponse!
+}
+
+input UpdateAppointmentPayload {
+  endTime: DateTime
+  patientRecordId: String
+  physicianId: String
+  startTime: DateTime
+  status: AppointmentStatusEnum
+}
+
+input UpdateMailSchedulePayload {
+  friday: Boolean
+  mailRecipients: [CreateMailRecipientInput!]
+  mailTemplateIds: [String!]
+  monday: Boolean
+  recipientUserId: String
+  saturday: Boolean
+  sunday: Boolean
+  thursday: Boolean
+  time: DateTime
+  tuesday: Boolean
+  wednesday: Boolean
+}
+
+input UpdateMailTemplatePayload {
+  body: String
+  contactMethod: MailTemplatesContactMethodEnum
+  name: String
+  subject: String
+}
+
+input UpdatePatientPayload {
+  address: AddressInput
+  cpf: String
+  dateOfBirth: String
+  email: String
+  name: String
+  phoneNumber: String
+  preferredContactMethod: PreferredContactMethodEnum
+}
+
+input UpdatePatientRecordPayload {
+  record: String
+  status: PatientRecordStatusEnum
+}
+
+input UpdatePhysicianLeavePayload {
+  endTime: DateTime
+  reason: String
+  startTime: DateTime
+}
+
+input UpdatePhysicianPayload {
+  cpf: String
+  crm: String
+  dateOfBirth: DateTime
+  email: String
+  name: String
+  phoneNumber: String
+}
+
+input UpdatePhysicianWorkingHoursPayload {
+  day: PhysicianWorkingHoursDayEnum
+  endTime: String
+  startTime: String
+}
+
+input UpdateUserPayload {
+  activated: Boolean
+  email: String
+  name: String
+  password: String
+  physicianId: String
+  roles: [String!]
+}
+
+type User {
+  activated: Boolean!
+  createdAt: DateTime!
+  email: String!
+  id: String!
+  messages: [MessageResponse!]!
+  name: String!
+  permissionNames: [String!]!
+  phoneNumber: String
+  physician: Physician
+  physicianId: String
+  roleNames: [String!]!
+  roles: [Role!]!
+  updatedAt: DateTime!
+}
+
+type UserResponse {
+  user: User!
+}
